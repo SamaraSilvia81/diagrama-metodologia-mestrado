@@ -1,276 +1,52 @@
-
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
-
-  .diag-root {
-    background: #080606;
-    color: #F0EDE8;
-    font-family: 'Inter', sans-serif;
-    padding: 32px 28px 40px;
-    min-height: 100%;
-    box-sizing: border-box;
-    position: relative;
-  }
-
-  /* scanlines */
-  .diag-root::before {
-    content:'';
-    position:absolute;inset:0;pointer-events:none;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 3px,
-      rgba(0,0,0,0.04) 3px,
-      rgba(0,0,0,0.04) 4px
-    );
-    z-index:0;
-  }
-
-  * { position: relative; z-index: 1; box-sizing: border-box; }
-
-  /* ── HEADER ── */
-  .header-rule {
-    border: none;
-    border-top: 1px solid #5a1f1f;
-    margin: 0;
-  }
-  .header-top {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    padding: 10px 0 8px;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-  .header-title {
-    font-family: 'Bebas Neue', Impact, sans-serif;
-    font-size: 36px;
-    letter-spacing: 0.08em;
-    color: #C0211C;
-    line-height: 1;
-    margin: 0;
-  }
-  .header-meta {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: #8a7272;
-    text-align: right;
-    line-height: 1.7;
-  }
-  .header-theme {
-    font-size: 10px;
-    color: #C4B8B0;
-    font-family: 'Inter', sans-serif;
-    font-style: italic;
-    line-height: 1.5;
-    padding: 8px 0 14px;
-    border-bottom: 1px solid #251818;
-    margin-bottom: 20px;
-  }
-
-  /* ── PERGUNTA DE PESQUISA ── */
-  .rq-box {
-    border: 1px solid #5a1f1f;
-    border-left: 3px solid #C0211C;
-    background: #110a0a;
-    border-radius: 4px;
-    padding: 14px 18px;
-    margin-bottom: 20px;
-    position: relative;
-  }
-  .rq-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 8px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: #C0211C;
-    margin-bottom: 6px;
-  }
-  .rq-text {
-    font-size: 11.5px;
-    color: #C4B8B0;
-    line-height: 1.65;
-    font-style: italic;
-  }
-  .rq-text em {
-    color: #F0EDE8;
-    font-style: normal;
-    font-weight: 500;
-  }
-
-  /* ── CONNECTOR ── */
-  .connector {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 24px;
-    margin: 0 auto;
-    width: 1px;
-    border-left: 1px dashed #5a1f1f;
-  }
-  .connector-arrow {
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 6px solid #5a1f1f;
-    margin-top: -1px;
-  }
-
-  /* ── BLOCO FASE ── */
-  .phase-block {
-    border: 1px solid #251818;
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 0;
-    transition: border-color 0.15s;
-    cursor: pointer;
-  }
-  .phase-block:hover { border-color: #5a1f1f; }
-
-  .phase-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    background: #0f0d0d;
-    border-bottom: 1px solid #251818;
-  }
-  .phase-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    line-height: 1;
-    color: #4e3e3e;
-    flex-shrink: 0;
-    width: 24px;
-  }
-  .phase-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 17px;
-    letter-spacing: 0.06em;
-    color: #F0EDE8;
-    flex: 1;
-  }
-  .badge {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 8px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    padding: 2px 7px;
-    border-radius: 2px;
-    flex-shrink: 0;
-  }
-  .badge-done   { background: rgba(28,184,74,0.12); color: #1CB84A; border: 1px solid rgba(28,184,74,0.3); }
-  .badge-wip    { background: rgba(200,146,42,0.12); color: #c8922a; border: 1px solid rgba(200,146,42,0.3); }
-  .badge-pend   { background: rgba(78,62,62,0.3);  color: #8a7272; border: 1px solid #251818; }
-
-  .phase-body {
-    padding: 10px 14px 12px;
-    background: #080606;
-  }
-  .phase-desc {
-    font-size: 11px;
-    color: #8a7272;
-    line-height: 1.6;
-    font-family: 'JetBrains Mono', monospace;
-    letter-spacing: 0.01em;
-  }
-  .phase-desc strong { color: #C4B8B0; font-weight: 500; }
-
-  /* sub-blocos dataset */
-  .sub-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-    margin-top: 10px;
-  }
-  .sub-block {
-    border: 1px solid #251818;
-    border-radius: 3px;
-    padding: 8px 10px;
-    background: #0f0d0d;
-    transition: border-color 0.15s;
-    cursor: pointer;
-  }
-  .sub-block:hover { border-color: #5a1f1f; }
-  .sub-block-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 13px;
-    letter-spacing: 0.06em;
-    color: #C4B8B0;
-    margin-bottom: 4px;
-  }
-  .sub-block-desc {
-    font-size: 9.5px;
-    color: #4e3e3e;
-    font-family: 'JetBrains Mono', monospace;
-    line-height: 1.5;
-  }
-
-  /* validação: 2 colunas */
-  .val-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 10px;
-  }
-  .val-block {
-    border: 1px solid #251818;
-    border-radius: 3px;
-    padding: 10px 12px;
-    background: #0f0d0d;
-    cursor: pointer;
-    transition: border-color 0.15s;
-  }
-  .val-block:hover { border-color: #5a1f1f; }
-  .val-or {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 11px;
-    color: #4e3e3e;
-    letter-spacing: 0.1em;
-  }
-
-  /* contribuição final — acento vermelho forte */
-  .phase-block.final { border-color: #5a1f1f; }
-  .phase-block.final .phase-header { background: #110a0a; border-bottom-color: #5a1f1f; }
-  .phase-block.final .phase-num { color: #9E1A17; }
-  .phase-block.final .phase-title { color: #C0211C; }
-
-  /* rodapé */
-  .footer {
-    margin-top: 24px;
-    border-top: 1px solid #251818;
-    padding-top: 10px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 8px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: #4e3e3e;
-    display: flex;
-    justify-content: space-between;
-  }
-</style>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagrama de Metodologia — Samara Sabino</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
 <div class="diag-root">
 
   <!-- HEADER -->
-  <hr class="header-rule">
-  <div class="header-top">
-    <h1 class="header-title">Diagrama de Metodologia</h1>
-    <div class="header-meta">
-      Samara Silvia Sabino<br>
-      Orientador: Vinícius Garcia<br>
-      Área: Engenharia de Software · CIn UFPE
+  <div class="header-wrap">
+    <div class="header-top-row">
+      <div class="header-top-left">
+        <div class="header-eyebrow">// Diagrama de Metodologia</div>
+        <h1 class="header-title">Samara Silvia Sabino</h1>
+      </div>
+      <img class="avatar" src="avatar-samara.jpg" alt="Samara Silvia Sabino">
+    </div>
+    <div class="header-bottom-row">
+      <div class="header-meta-block">
+        <div class="header-meta-row">
+          <span class="header-meta-label">Orientador</span>
+          <span class="header-meta-value">Vinícius Garcia</span>
+        </div>
+        <div class="header-meta-row">
+          <span class="header-meta-label">Professora</span>
+          <span class="header-meta-value">Maíra Araújo de Santana</span>
+        </div>
+        <div class="header-meta-row">
+          <span class="header-meta-label">Área</span>
+          <span class="header-meta-value">Engenharia de Software</span>
+        </div>
+        <div class="header-meta-row">
+          <span class="header-meta-label">Instituição</span>
+          <span class="header-meta-value">CIn · UFPE</span>
+        </div>
+        <div class="header-meta-row">
+          <span class="header-meta-label">Curso</span>
+          <span class="header-meta-value">IN1142 · Metodologia Científica</span>
+        </div>
+      </div>
     </div>
   </div>
-  <hr class="header-rule">
   <div class="header-theme">
-    <strong style="color:#C4B8B0;font-style:normal">Tema:</strong> Diretrizes para Implementação de Microfrontends em Larga Escala: Uma Investigação Empírica sobre Desafios Arquiteturais com Ênfase em Dívida Técnica
+    <span class="header-theme-label">Tema</span>
+    Diretrizes para Implementação de Microfrontends em Larga Escala: Uma Investigação Empírica sobre Desafios Arquiteturais com Ênfase em Dívida Técnica
   </div>
 
   <!-- PERGUNTA DE PESQUISA -->
@@ -321,33 +97,57 @@
 
   <div class="connector"><div class="connector-arrow"></div></div>
 
-  <!-- FASE 3: DATASET 1 -->
-  <div class="phase-block" onclick="sendPrompt('Como foi construído o Dataset 1 de caracterização arquitetural de projetos MFE?')">
-    <div class="phase-header">
-      <div class="phase-num">03</div>
-      <div class="phase-title">Dataset 1 — Caracterização Arquitetural (MSR)</div>
-      <span class="badge badge-wip">Em andamento</span>
-    </div>
-    <div class="phase-body">
-      <div class="phase-desc"><strong>Mapping the Microfrontend Ecosystem: A Dataset of Open-Source Projects</strong></div>
-      <div class="sub-grid">
-        <div class="sub-block" onclick="event.stopPropagation(); sendPrompt('Como foi feita a mineração via API do GitHub para encontrar projetos MFE?')">
-          <div class="sub-block-title">Mineração</div>
-          <div class="sub-block-desc">API GitHub · busca por heurísticas técnicas · identificação de padrões MFE</div>
-        </div>
-        <div class="sub-block" onclick="event.stopPropagation(); sendPrompt('Quais filtros de maturidade e qualidade foram aplicados no dataset?')">
-          <div class="sub-block-title">Filtragem</div>
-          <div class="sub-block-desc">Critérios de maturidade · filtros de qualidade finos · validação pós-execução</div>
-        </div>
-        <div class="sub-block" onclick="event.stopPropagation(); sendPrompt('O que é o deep mining de metadados e a curadoria qualitativa desta pesquisa?')">
-          <div class="sub-block-title">Deep Mining</div>
-          <div class="sub-block-desc">Extração de metadados profundos · distribuição de maturidade · curadoria qualitativa</div>
+  <!-- ═══════════════════════════════════════════════════════════
+       WRAPPER: Fase 3 + Nota de Decisão (aside) + Connector saída
+       A linha vertical passa pelo centro da coluna esquerda (54%)
+       A nota flutua à direita via position:absolute
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="step3-wrap">
+
+    <!-- FASE 3: DATASET 1 -->
+    <div class="phase-block" onclick="sendPrompt('Como foi construído o Dataset 1 de caracterização arquitetural de projetos MFE?')">
+      <div class="phase-header">
+        <div class="phase-num">03</div>
+        <div class="phase-title">Dataset 1 — Caracterização Arquitetural (MSR)</div>
+        <span class="badge badge-wip">Em andamento</span>
+      </div>
+      <div class="phase-body">
+        <div class="phase-desc"><strong>Mapping the Microfrontend Ecosystem: A Dataset of Open-Source Projects</strong></div>
+        <div class="sub-grid">
+          <div class="sub-block" onclick="event.stopPropagation(); sendPrompt('Como foi feita a mineração via API do GitHub para encontrar projetos MFE?')">
+            <div class="sub-block-title">Mineração</div>
+            <div class="sub-block-desc">API GitHub · busca por heurísticas técnicas · identificação de padrões MFE</div>
+          </div>
+          <div class="sub-block" onclick="event.stopPropagation(); sendPrompt('Quais filtros de maturidade e qualidade foram aplicados no dataset?')">
+            <div class="sub-block-title">Filtragem</div>
+            <div class="sub-block-desc">Critérios de maturidade · filtros de qualidade finos · validação pós-execução</div>
+          </div>
+          <div class="sub-block" onclick="event.stopPropagation(); sendPrompt('O que é o deep mining de metadados e a curadoria qualitativa desta pesquisa?')">
+            <div class="sub-block-title">Deep Mining</div>
+            <div class="sub-block-desc">Extração de metadados profundos · distribuição de maturidade · curadoria qualitativa</div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="connector"><div class="connector-arrow"></div></div>
+    <!-- NOTA DE DECISÃO — aside direito, fora do fluxo -->
+    <div class="decision-note">
+      <div class="decision-label">// decisão · restrição de tempo</div>
+      <div class="decision-title">Recorte Estratégico para Resultados Prévios</div>
+      <div class="decision-desc">
+        Da base de <strong>455 repositórios</strong> minerados no Dataset 1,
+        serão selecionados <strong>50–100 projetos</strong> como subconjunto representativo
+        para iniciar a construção do Dataset 2 e gerar resultados parciais antes da conclusão
+        do corpus completo — viabilizando análises preliminares dentro do prazo da dissertação.
+      </div>
+      <div class="decision-arrow-label">↓ segue para Dataset 2 com subconjunto</div>
+    </div>
+
+    <!-- Connector de saída — pertence ao fluxo, fica na coluna esquerda -->
+    <div class="connector step3-connector-out"><div class="connector-arrow"></div></div>
+
+  </div>
+  <!-- FIM step3-wrap -->
 
   <!-- FASE 4: DATASET 2 -->
   <div class="phase-block" onclick="sendPrompt('Como será construído o Dataset 2 de análise de SATD nos repositórios MFE?')">
@@ -412,12 +212,12 @@
     <div class="phase-body">
       <div class="val-grid">
         <div class="val-block" onclick="event.stopPropagation(); sendPrompt('Como funciona a validação por juízo de especialistas em arquitetura de software?')">
-          <div class="sub-block-title" style="font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:0.06em;color:#C4B8B0;margin-bottom:4px">Validação A</div>
-          <div class="sub-block-desc" style="font-size:9.5px;color:#8a7272;font-family:'JetBrains Mono',monospace;line-height:1.5">Juízo de especialistas · mín. 3 profissionais com expertise reconhecida em arquitetura MFE</div>
+          <div class="val-block-title">Validação A</div>
+          <div class="val-block-desc">Juízo de especialistas · mín. 3 profissionais com expertise reconhecida em arquitetura MFE</div>
         </div>
         <div class="val-block" onclick="event.stopPropagation(); sendPrompt('Como funcionaria a validação das diretrizes em uma organização parceira?')">
-          <div class="sub-block-title" style="font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:0.06em;color:#C4B8B0;margin-bottom:4px">Validação B</div>
-          <div class="sub-block-desc" style="font-size:9.5px;color:#8a7272;font-family:'JetBrains Mono',monospace;line-height:1.5">Aplicação em contexto real · organização parceira · período delimitado · validade externa</div>
+          <div class="val-block-title">Validação B</div>
+          <div class="val-block-desc">Aplicação em contexto real · organização parceira · período delimitado · validade externa</div>
         </div>
       </div>
     </div>
@@ -448,3 +248,6 @@
   </div>
 
 </div>
+
+</body>
+</html>
