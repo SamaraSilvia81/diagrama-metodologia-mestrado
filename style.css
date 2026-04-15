@@ -463,3 +463,23 @@ html, body {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* ── HACK PARA IMPRESSÃO EM PDF PERFEITA (CHROME/EDGE) ── */
+@media print {
+  @page {
+    size: 250mm 700mm; /* Força o navegador a criar uma página GIGANTE e única, sem quebras! */
+    margin: 0; /* Remove bordas brancas */
+  }
+  
+  body, html {
+    background: #080606 !important;
+    -webkit-print-color-adjust: exact !important; /* Força a imprimir as cores de fundo */
+    print-color-adjust: exact !important;
+  }
+  
+  /* Garante que nenhum bloco seja cortado no meio caso a altura não seja suficiente */
+  .phase-block, .rq-box, .decision-note {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}
