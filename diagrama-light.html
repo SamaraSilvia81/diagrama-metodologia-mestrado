@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagrama de Metodologia — Samara Sabino (Light)</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      margin: 0; padding: 0;
+      background: #F5F3EF;
+      color: #1A1614;
+      font-family: 'Inter', sans-serif;
+      min-height: 100%;
+    }
+
+    .diag-root {
+      background: #F5F3EF;
+      color: #1A1614;
+      font-family: 'Inter', sans-serif;
+      padding: 32px 28px 40px;
+      min-height: 100vh;
+      box-sizing: border-box;
+      position: relative;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .diag-root::before {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.012) 3px, rgba(0,0,0,0.012) 4px);
+      z-index: 0;
+    }
+
+    * { position: relative; z-index: 1; }
+
+    /* HEADER */
+    .header-wrap { border: 1px solid #D8D2C8; border-radius: 4px; overflow: hidden; margin-bottom: 0; }
+
+    .header-top-row {
+      padding: 20px 24px 18px;
+      background: #EDEAE4;
+      border-bottom: 1px solid #D8D2C8;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+
+    .header-top-left { flex: 1; min-width: 0; }
+
+    .header-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(9px,1.2vw,11px); letter-spacing: 0.22em;
+      text-transform: uppercase; color: #B0210F; margin-bottom: 6px;
+    }
+
+    .header-title {
+      font-family: 'Bebas Neue', Impact, sans-serif;
+      font-size: clamp(38px,7vw,60px); letter-spacing: 0.05em;
+      color: #1A1614; line-height: 1; margin: 0;
+    }
+
+    .header-bottom-row {
+      display: flex; align-items: center; gap: 20px;
+      padding: 16px 24px; background: #F5F3EF;
+    }
+
+    .avatar {
+      width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
+      border: 1px solid #C4BBAF; filter: grayscale(10%) contrast(1.02);
+      flex-shrink: 0; align-self: center;
+    }
+
+    .header-meta-block { display: flex; flex-direction: column; gap: 8px; }
+    .header-meta-row { display: flex; align-items: baseline; gap: 16px; }
+
+    .header-meta-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(8px,1.1vw,10px); letter-spacing: 0.18em;
+      text-transform: uppercase; color: #9E948A; flex-shrink: 0; width: 88px;
+    }
+
+    .header-meta-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(9px,1.3vw,11px); letter-spacing: 0.08em; color: #4A3E38;
+    }
+
+    .header-theme {
+      font-size: clamp(11px,1.6vw,13px); color: #6E6058;
+      font-family: 'JetBrains Mono', monospace; font-style: italic; line-height: 1.6;
+      padding: 10px 16px;
+      border: 1px solid #D8D2C8; border-top: none; border-radius: 0 0 4px 4px;
+      background: #F5F3EF; margin-bottom: 20px;
+      display: flex; gap: 12px; align-items: baseline;
+    }
+
+    .header-theme-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(8px,1.1vw,10px); letter-spacing: 0.22em;
+      text-transform: uppercase; color: #B0210F; font-style: normal; flex-shrink: 0;
+    }
+
+    /* RQ */
+    .rq-box {
+      border: 1px solid #C4BBAF; border-left: 3px solid #B0210F;
+      background: #EDEAE4; border-radius: 4px; padding: 14px 18px; margin-bottom: 20px;
+    }
+
+    .rq-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(9px,1.3vw,11px); letter-spacing: 0.2em;
+      text-transform: uppercase; color: #B0210F; margin-bottom: 8px;
+    }
+
+    .rq-text { font-size: clamp(12px,1.8vw,14px); color: #4A3E38; line-height: 1.7; font-style: italic; }
+    .rq-text em { color: #1A1614; font-style: normal; font-weight: 500; }
+
+    /* CONNECTOR */
+    .connector {
+      display: flex; flex-direction: column; align-items: center;
+      height: 28px; margin: 0 auto; width: 1px; border-left: 1px dashed #C4BBAF;
+    }
+
+    .connector-arrow {
+      width: 0; height: 0;
+      border-left: 5px solid transparent; border-right: 5px solid transparent;
+      border-top: 6px solid #C4BBAF; margin-top: -1px;
+    }
+
+    /* FASE */
+    .phase-block {
+      border: 1px solid #D8D2C8; border-radius: 4px; overflow: hidden;
+      margin-bottom: 0; transition: border-color 0.15s; cursor: pointer;
+    }
+    .phase-block:hover { border-color: #B0210F; }
+
+    .phase-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px; background: #EDEAE4;
+      border-bottom: 1px solid #D8D2C8; flex-wrap: wrap;
+    }
+
+    .phase-num {
+      font-family: 'Bebas Neue', sans-serif; font-size: clamp(20px,3vw,26px);
+      line-height: 1; color: #C4BBAF; flex-shrink: 0; width: 28px;
+    }
+
+    .phase-title {
+      font-family: 'Bebas Neue', sans-serif; font-size: clamp(16px,2.5vw,20px);
+      letter-spacing: 0.06em; color: #1A1614; flex: 1;
+    }
+
+    .badge {
+      font-family: 'JetBrains Mono', monospace; font-size: clamp(9px,1.2vw,11px);
+      letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 2px; flex-shrink: 0;
+    }
+
+    .badge-done { background: rgba(16,148,56,0.10); color: #107830; border: 1px solid rgba(16,148,56,0.25); }
+    .badge-wip  { background: rgba(180,120,20,0.10); color: #8A5E10; border: 1px solid rgba(180,120,20,0.25); }
+    .badge-pend { background: rgba(180,168,155,0.18); color: #9E948A; border: 1px solid #D8D2C8; }
+
+    .phase-body { padding: 12px 16px 14px; background: #F5F3EF; }
+
+    .phase-desc {
+      font-size: clamp(12px,1.7vw,14px); color: #6E6058; line-height: 1.65;
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.01em;
+    }
+    .phase-desc strong { color: #2E2420; font-weight: 500; }
+
+    /* SUB-GRID */
+    .sub-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
+
+    .sub-block {
+      border: 1px solid #D8D2C8; border-radius: 3px; padding: 10px 12px;
+      background: #EDEAE4; transition: border-color 0.15s; cursor: pointer;
+    }
+    .sub-block:hover { border-color: #B0210F; }
+
+    .sub-block-title {
+      font-family: 'Bebas Neue', sans-serif; font-size: clamp(13px,1.8vw,15px);
+      letter-spacing: 0.06em; color: #2E2420; margin-bottom: 5px;
+    }
+
+    .sub-block-desc {
+      font-size: clamp(10px,1.4vw,12px); color: #9E948A;
+      font-family: 'JetBrains Mono', monospace; line-height: 1.55;
+    }
+
+    /* VAL-GRID */
+    .val-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+
+    .val-block {
+      border: 1px solid #D8D2C8; border-radius: 3px; padding: 12px 14px;
+      background: #EDEAE4; cursor: pointer; transition: border-color 0.15s;
+    }
+    .val-block:hover { border-color: #B0210F; }
+
+    .val-block-title {
+      font-family: 'Bebas Neue', sans-serif; font-size: clamp(13px,1.8vw,15px);
+      letter-spacing: 0.06em; color: #2E2420; margin-bottom: 5px;
+    }
+
+    .val-block-desc {
+      font-size: clamp(10px,1.4vw,12px); color: #6E6058;
+      font-family: 'JetBrains Mono', monospace; line-height: 1.55;
+    }
+
+    /* FINAL */
+    .phase-block.final { border-color: #C4BBAF; }
+    .phase-block.final .phase-header { background: #E8E2DA; border-bottom-color: #C4BBAF; }
+    .phase-block.final .phase-num   { color: #B0210F; opacity: 0.5; }
+    .phase-block.final .phase-title { color: #B0210F; }
+
+    /* STEP3 + DECISÃO */
+    .step3-wrap { display: flex; flex-direction: column; gap: 20px; width: 100%; }
+
+    .decision-note {
+      width: 100%;
+      border: 1px solid #C4BBAF; border-left: 3px solid #8A5E10;
+      border-radius: 4px; background: #EDE8DF; padding: 16px 20px;
+    }
+
+    .decision-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 9px;
+      letter-spacing: 0.2em; text-transform: uppercase; color: #8A5E10; margin-bottom: 6px;
+    }
+
+    .decision-title {
+      font-family: 'Bebas Neue', sans-serif; font-size: clamp(14px,2vw,16px);
+      letter-spacing: 0.06em; color: #2E2420; margin-bottom: 7px;
+    }
+
+    .decision-desc {
+      font-family: 'JetBrains Mono', monospace; font-size: clamp(10px,1.4vw,12px);
+      color: #6E6058; line-height: 1.6;
+    }
+    .decision-desc strong { color: #8A5E10; font-weight: 500; }
+
+    .decision-arrow-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 9px;
+      letter-spacing: 0.14em; color: #B0210F; margin-top: 12px; text-align: right;
+    }
+
+    /* RODAPÉ */
+    .footer {
+      margin-top: 24px; border-top: 1px solid #D8D2C8; padding-top: 10px;
+      font-family: 'JetBrains Mono', monospace; font-size: clamp(9px,1.3vw,11px);
+      letter-spacing: 0.14em; text-transform: uppercase; color: #B0A89E;
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    }
+
+    /* BOTÃO DOWNLOAD */
+    #btn-download {
+      position: fixed; top: 16px; right: 16px; z-index: 9999;
+      background: #B0210F; color: #F5F3EF;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      border: none; padding: 9px 18px; border-radius: 3px;
+      cursor: pointer; transition: background 0.15s, opacity 0.15s;
+      box-shadow: 0 2px 10px rgba(176,33,15,0.18);
+    }
+    #btn-download:hover { background: #8A1809; }
+    #btn-download:disabled { opacity: 0.5; cursor: wait; }
+
+    @media (max-width: 600px) {
+      .diag-root { padding: 20px 16px 32px; }
+      .header-top-row { flex-direction: column-reverse; align-items: flex-start; gap: 12px; }
+      .val-grid { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      @page { size: 250mm 700mm; margin: 0; }
+      #btn-download { display: none; }
+      body, html { background: #F5F3EF !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Botão de download fixo -->
+<button id="btn-download" onclick="downloadPNG()">⬇ Baixar imagem</button>
+
+<div class="diag-root" id="diagrama">
+
+  <!-- HEADER -->
+  <div class="header-wrap">
+    <div class="header-top-row">
+      <div class="header-top-left">
+        <div class="header-eyebrow">// Diagrama de Metodologia</div>
+        <h1 class="header-title">Samara Silvia Sabino</h1>
+      </div>
+      <!-- Avatar embutido em base64 para funcionar offline/html2canvas -->
+      <img class="avatar" id="avatar-img" src="avatar-samara.jpg" alt="Samara Silvia Sabino"
+           onerror="this.style.display='none'">
+    </div>
+    <div class="header-bottom-row">
+      <div class="header-meta-block">
+        <div class="header-meta-row">
+          <span class="header-meta-label">Orientador</span>
+          <span class="header-meta-value">Vinícius Garcia</span>
+        </div>
+        <div class="header-meta-row">
+          <span class="header-meta-label">Professora</span>
+          <span class="header-meta-value">Maíra Araújo de Santana</span>
+        </div>
+        <div class="header-meta-row">
+          <span class="header-meta-label">Área</span>
+          <span class="header-meta-value">Engenharia de Software</span>
+        </div>
+        <div class="header-meta-row">
+          <span class="header-meta-label">Instituição</span>
+          <span class="header-meta-value">CIn · UFPE</span>
+        </div>
+        <div class="header-meta-row">
+          <span class="header-meta-label">Curso</span>
+          <span class="header-meta-value">IN1142 · Metodologia Científica</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="header-theme">
+    <span class="header-theme-label">Tema</span>
+    Diretrizes para Implementação de Microfrontends em Larga Escala: Uma Investigação Empírica sobre Desafios Arquiteturais com Ênfase em Dívida Técnica
+  </div>
+
+  <!-- PERGUNTA DE PESQUISA -->
+  <div class="rq-box">
+    <div class="rq-label">// Pergunta de pesquisa</div>
+    <div class="rq-text">
+      "De que forma a <em>Dívida Técnica</em>, enquanto lente de diagnóstico, revela os
+      <em>desafios arquiteturais e de design estruturais</em> em arquiteturas de microfrontend,
+      e quais impactos reverberam na <em>eficiência e sustentabilidade</em> da arquitetura
+      para o desenvolvimento de sistemas de grande escala?"
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-arrow"></div></div>
+
+  <!-- FASE 1 -->
+  <div class="phase-block">
+    <div class="phase-header">
+      <div class="phase-num">01</div>
+      <div class="phase-title">Revisão Sistemática da Literatura</div>
+      <span class="badge badge-done">Concluído</span>
+    </div>
+    <div class="phase-body">
+      <div class="phase-desc">
+        <strong>RSL</strong> · Mapeamento do estado da arte sobre DT, SATD e desafios arquiteturais em MFE.
+        Literatura predominantemente anedótica → identificação da lacuna empírica.
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-arrow"></div></div>
+
+  <!-- FASE 2 -->
+  <div class="phase-block">
+    <div class="phase-header">
+      <div class="phase-num">02</div>
+      <div class="phase-title">Estruturação pelo Framework GQM</div>
+      <span class="badge badge-done">Concluído</span>
+    </div>
+    <div class="phase-body">
+      <div class="phase-desc">
+        <strong>Goal → Questions → Metrics</strong> · Narrativa
+        <strong>Promessa → Realidade → Evidência → Impacto → Solução</strong>.
+        5 perguntas investigativas · Métricas via MSR (SATD, complexidade ciclomática, code ownership).
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-arrow"></div></div>
+
+  <!-- FASE 3 + DECISÃO -->
+  <div class="step3-wrap">
+    <div class="phase-block">
+      <div class="phase-header">
+        <div class="phase-num">03</div>
+        <div class="phase-title">Dataset 1 — Caracterização Arquitetural (MSR)</div>
+        <span class="badge badge-wip">Em andamento</span>
+      </div>
+      <div class="phase-body">
+        <div class="phase-desc"><strong>Mapping the Microfrontend Ecosystem: A Dataset of Open-Source Projects</strong></div>
+        <div class="sub-grid">
+          <div class="sub-block">
+            <div class="sub-block-title">Mineração</div>
+            <div class="sub-block-desc">API GitHub · busca por heurísticas técnicas · identificação de padrões MFE</div>
+          </div>
+          <div class="sub-block">
+            <div class="sub-block-title">Filtragem</div>
+            <div class="sub-block-desc">Critérios de maturidade · filtros de qualidade finos · validação pós-execução</div>
+          </div>
+          <div class="sub-block">
+            <div class="sub-block-title">Deep Mining</div>
+            <div class="sub-block-desc">Extração de metadados profundos · distribuição de maturidade · curadoria qualitativa</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="decision-note">
+      <div class="decision-label">// decisão · restrição de tempo</div>
+      <div class="decision-title">Recorte Estratégico para Resultados Prévios</div>
+      <div class="decision-desc">
+        Da base de <strong>455 repositórios</strong> minerados no Dataset 1,
+        serão selecionados <strong>50–100 projetos</strong> como subconjunto representativo
+        para iniciar a construção do Dataset 2 e gerar resultados parciais antes da conclusão
+        do corpus completo — viabilizando análises preliminares dentro do prazo da dissertação.
+      </div>
+      <div class="decision-arrow-label">↓ segue para Dataset 2 com subconjunto</div>
+    </div>
+
+    <div class="connector step3-connector-out"><div class="connector-arrow"></div></div>
+  </div>
+
+  <!-- FASE 4 -->
+  <div class="phase-block">
+    <div class="phase-header">
+      <div class="phase-num">04</div>
+      <div class="phase-title">Dataset 2 — Indicadores de Saúde (SATD)</div>
+      <span class="badge badge-pend">Pendente</span>
+    </div>
+    <div class="phase-body">
+      <div class="phase-desc">
+        Construído sobre a base do Dataset 1 ·
+        <strong>Dívida Técnica Autoadmitida</strong>: comentários TODO / FIXME / HACK ·
+        <strong>complexidade ciclomática</strong> · inconsistência de dependências entre módulos ·
+        métricas de <strong>code ownership</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-arrow"></div></div>
+
+  <!-- FASE 5 -->
+  <div class="phase-block">
+    <div class="phase-header">
+      <div class="phase-num">05</div>
+      <div class="phase-title">Análise Cruzada — Questões de Investigação (QIS)</div>
+      <span class="badge badge-pend">Pendente</span>
+    </div>
+    <div class="phase-body">
+      <div class="phase-desc">
+        Correlação entre <strong>características arquiteturais</strong> (monorepo vs multi-repo, estratégias de integração)
+        e <strong>indicadores de DT</strong> · análise estatística · p-valor · visualização comparativa
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-arrow"></div></div>
+
+  <!-- FASE 6 -->
+  <div class="phase-block">
+    <div class="phase-header">
+      <div class="phase-num">06</div>
+      <div class="phase-title">Proposição das Diretrizes</div>
+      <span class="badge badge-pend">Pendente</span>
+    </div>
+    <div class="phase-body">
+      <div class="phase-desc">
+        Síntese dos achados empíricos em <strong>recomendações práticas estruturadas</strong> para
+        desenvolvedores e arquitetos de software · decisões de design informadas em ecossistemas MFE de larga escala
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-arrow"></div></div>
+
+  <!-- FASE 7 -->
+  <div class="phase-block">
+    <div class="phase-header">
+      <div class="phase-num">07</div>
+      <div class="phase-title">Validação das Diretrizes</div>
+      <span class="badge badge-pend">Pendente</span>
+    </div>
+    <div class="phase-body">
+      <div class="val-grid">
+        <div class="val-block">
+          <div class="val-block-title">Validação A</div>
+          <div class="val-block-desc">Juízo de especialistas · mín. 3 profissionais com expertise reconhecida em arquitetura MFE</div>
+        </div>
+        <div class="val-block">
+          <div class="val-block-title">Validação B</div>
+          <div class="val-block-desc">Aplicação em contexto real · organização parceira · período delimitado · validade externa</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-arrow"></div></div>
+
+  <!-- FASE 8 -->
+  <div class="phase-block final">
+    <div class="phase-header">
+      <div class="phase-num">08</div>
+      <div class="phase-title">Contribuição Esperada</div>
+      <span class="badge badge-pend">Pendente</span>
+    </div>
+    <div class="phase-body">
+      <div class="phase-desc">
+        <strong>Diretrizes baseadas em evidências empíricas</strong> para arquiteturas MFE em larga escala ·
+        abordagem diagnóstica inédita tratando DT como sintoma rastreável ·
+        conexão entre <strong>saúde arquitetural</strong>, experiência do usuário e sustentabilidade dos sistemas
+      </div>
+    </div>
+  </div>
+
+  <!-- RODAPÉ -->
+  <div class="footer">
+    <span>IN1142 · Metodologia de Experimentação Científica · CIn UFPE</span>
+    <span>Orientador: Vinícius Garcia</span>
+  </div>
+
+</div>
+
+<script>
+  async function downloadPNG() {
+    const btn = document.getElementById('btn-download');
+    btn.disabled = true;
+    btn.textContent = 'Gerando…';
+
+    // Esconde o botão na captura
+    btn.style.display = 'none';
+
+    try {
+      const el = document.getElementById('diagrama');
+      const canvas = await html2canvas(el, {
+        scale: 2,           // 2x para alta resolução
+        useCORS: true,
+        backgroundColor: '#F5F3EF',
+        scrollY: 0,
+        windowWidth: 900,
+        logging: false
+      });
+
+      const link = document.createElement('a');
+      link.download = 'diagrama-metodologia-samara-sabino-light.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (e) {
+      alert('Erro ao gerar imagem. Tente pelo menu Imprimir > Salvar como PDF.');
+      console.error(e);
+    }
+
+    btn.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = '⬇ Baixar imagem';
+  }
+</script>
+
+</body>
+</html>
